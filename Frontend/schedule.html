@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Schedule</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+<form id="available" class="form-horizontal">
+
+  <div class="form-group">
+    <label for="exampleDate" class="col-sm-2 control-label">Choose time</label>
+    <div class="col-sm-4">
+      <input id="startTime" type="time" class="form-control">
+    </div>
+
+    <div class="col-sm-2">
+      <h4 class="text-center">untill</h4>
+    </div>
+
+    <div class="col-sm-4">
+      <input id="endTime" type="time" class="form-control">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="exampleDate" class="col-sm-2 control-label">Choose date</label>
+    <div class="col-sm-10">
+      <input id="availableDate" type="date" class="form-control">
+    </div>
+  </div>
+
+  <select name="garden" multiple="multiple" class="hidden">
+    <option>Flowers</option>
+    <option selected="selected">Shrubs</option>
+    <option>Trees</option>
+    <option selected="selected">Bushes</option>
+    <option>Grass</option>
+    <option>Dirt</option>
+  </select>
+
+  <div class="form-group">
+    <button type="button" id="addAvailability" class="col-sm-2 col-sm-offset-5 btn btn-success">Add</button>
+  </div>
+
+  <div class="form-group">
+    <label for="exampleDate" class="col-sm-2 control-label">Availibility</label>
+    <div class="col-sm-10">
+      <ul class="list-group">
+      </ul>
+    </div>
+  </div>
+
+  <button type="submit" class="col-sm-2 col-sm-offset-5 btn btn-success">Submit</button>
+  <div class="form-group">
+    <button type="button" id="match" class="col-sm-2 col-sm-offset-5 btn btn-success">Match</button>
+  </div>
+</form>
+      </div>
+    </div>
+    
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/moment.js"></script> 
+    <script src="js/combodate.js"></script>
+    <script>
+      $(function(){
+        var form = $('#available');
+        var addButton = $('#addAvailability');
+        var matchButton = $('#match');
+        var availability = {
+          datas: []
+        };
+
+        matchButton.on('click', function(){
+          $.post({
+              url: 'http://localhost:3000/match',
+              cache: false,
+              success: function(data){
+                data.forEach(function(elem){
+                  var matchDate = new Date(elem.date);
+
+
+
+                  $.post({
+                      url: 'http://localhost:3000/try',
+                      cache: false,
+                      data: {date: elem.date},
+                      success: function(data){
+                        data.forEach(function(elem1){
+                          var userStart = elem.start;
+                          var userEnd = elem.end;
+                          var otherStart = elem1.start;
+                          var otherEnd = elem1.end;
+
+                          var maxStart = Math.max(userStart, otherStart);
+                          var minEnd = Math.min(userEnd, otherEnd);
+                          
+                          alert(`You can meet ${elem1.user} for ${(minEnd - maxStart)/60000} minutes on ${matchDate.getDate()}-${matchDate.getMonth()+1}-${matchDate.getFullYear()} from ${new Date(maxStart).getHours()}:${new Date(maxStart).getMinutes()}:${new Date(maxStart).getSeconds()} to ${new Date(minEnd).getHours()}:${new Date(minEnd).getMinutes()}:${new Date(minEnd).getSeconds()}`);
+                        });
+                      }
+                  });
+
+
+
+                });
+              }
+          });
+        });
+        addButton.on('click', function(){
+          var startTime = $('#startTime');
+          var endTime = $('#endTime');
+          var availableDate = $('#availableDate');
+
+          if(startTime.val() && endTime.val() && availableDate.val()){
+            var li = document.createElement('li');
+            var closeButton = document.createElement('button');
+            var closeSpan = document.createElement('span');
+
+            $(closeButton).addClass('close');
+            $(closeButton).attr('type', 'button');
+            $(closeButton).attr('aria-label', 'Close');
+
+            $(closeSpan).attr('aria-hidden', 'true');
+            $(closeSpan).html('&times;');
+
+            $(closeButton).append(closeSpan);
+
+            $(li).addClass('list-group-item');
+            $(li).html('Date: ' + availableDate.val() + '; From: ' + startTime.val() + ' - ' + endTime.val());
+            $(li).append(closeButton);
+
+            availability.datas.push({
+              start: startTime.val(),
+              end: endTime.val(),
+              date: availableDate.val()
+            });
+            $('ul').append(li);
+
+            form.trigger('reset');
+          } else {
+            alert('please fill the start and end time');
+          }
+        });
+        
+        form.submit(function(event){
+          event.preventDefault();
+          $.post({
+            url: 'http://localhost:3000/addTime',
+            cache: false,
+            data: availability,
+            success: function(data){
+              alert(data);
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
