@@ -53,6 +53,7 @@ app.post('/login', function(req, res){
 	    db.close();
 	    if(result){
 	    	req.session.user = result._id;
+	    	req.session.name = result.username;
 	    	res.redirect('schedule.html');
 	    } else{
 	    	res.redirect('login.html?value=no');
@@ -62,8 +63,8 @@ app.post('/login', function(req, res){
 });
 
 app.post('/register', function(req, res){
-	console.log('hello');
 	var email = req.body.email;
+	var username = req.body.username;
 	var password = req.body.password;
 
 	MongoClient.connect(url, function(err, db) {
@@ -71,9 +72,10 @@ app.post('/register', function(req, res){
 		// without throw statement, the server exits when error exist
 	 	db.collection('credentials').insertOne({
 	 		email: email,
+	 		username: username,
 	 		password: password
 	 	});
-	 	res.send();
+	 	res.redirect('login.html?value=added');
 	});
 });
 
@@ -110,7 +112,8 @@ app.post('/addTime', function(req, res){
 							},
 							$addToSet: {
 								users: {
-									user: req.session.user
+									user: req.session.user,
+									name: req.session.name
 								}
 							}
 						}, {
@@ -119,6 +122,7 @@ app.post('/addTime', function(req, res){
 
 						userSchedule.update({
 							user: req.session.user,
+							name: req.session.name,
 							date: new Date(`${date}`)
 						}, {
 							$set: {
@@ -184,12 +188,6 @@ app.post('/try', function(req, res){
 // configure listening port
 app.listen(3000, function(){
 	console.log('server listening on port 3000');
-	MongoClient.connect(url, function(err, db) {
-		// NOTE: research on javascript error handling
-		// without throw statement, the server exits when error exist
-		console.log('connected');
-	 	db.collection('credentials').find({email: email, password: password});
-	});
 });
 
 // todo: 
