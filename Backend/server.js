@@ -19,7 +19,7 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false
 }));
-app.use(express.static(path.resolve('../Frontend'))); //.. is considered dangerous, thus using path resolve
+app.use('/', express.static('Frontend')); //.. is considered dangerous, thus using path resolve
 
 // Handler for GET request
 app.get('/', function(req, res){
