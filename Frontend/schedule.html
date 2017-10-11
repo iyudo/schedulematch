@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <button type="submit" class="col-sm-2 col-sm-offset-5 btn btn-success">Submit</button>
+  <button id="submit" type="submit" class="col-sm-2 col-sm-offset-5 btn btn-success">Submit</button>
   <div class="form-group">
     <button type="button" id="match" class="col-sm-2 col-sm-offset-5 btn btn-success">Match</button>
   </div>
@@ -90,6 +90,7 @@
         };
 
         matchButton.on('click', function(){
+          let btn = $(this).button('loading');
           $.post({
               url: 'http://localhost:3000/match',
               cache: false,
@@ -115,6 +116,7 @@
                           
                           if((minEnd - maxStart)/60000 >= 45){
                             alert(`You can meet ${elem1.name} for ${(minEnd - maxStart)/60000} minutes on ${matchDate.getDate()}-${matchDate.getMonth()+1}-${matchDate.getFullYear()} from ${new Date(maxStart).getHours()}:${new Date(maxStart).getMinutes()}:${new Date(maxStart).getSeconds()} to ${new Date(minEnd).getHours()}:${new Date(minEnd).getMinutes()}:${new Date(minEnd).getSeconds()}`);
+                            btn.button('reset');
                           }
                         });
                       }
@@ -164,12 +166,14 @@
         
         form.submit(function(event){
           event.preventDefault();
+          let btn = $('#submit').button('loading');
           $.post({
             url: 'http://localhost:3000/addTime',
             cache: false,
             data: availability,
             success: function(data){
               alert(data);
+              btn.button('reset');
             }
           });
         });

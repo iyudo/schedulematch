@@ -7,7 +7,7 @@ var express = require('express'),
 	cors = require('cors');
 
 // Connection URL
-var url = 'mongodb://localhost:27017/schedulematch';
+var url = 'mongodb://iyudo26:secret@ds147544.mlab.com:47544/schedulematch';
 
 // Configure express app, use body-parser, use cors, use express-session, use cors for ajax
 app = express();
@@ -186,8 +186,9 @@ app.post('/try', function(req, res){
 
 
 // configure listening port
-app.listen(3000, function(){
-	console.log('server listening on port 3000');
+const server = app.listen(process.env.PORT || 3000, function(){
+	const port = server.address().port;
+	console.log(`server listening on port ${port}`);
 });
 
 // todo: 
