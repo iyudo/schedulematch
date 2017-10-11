@@ -92,7 +92,7 @@
         matchButton.on('click', function(){
           let btn = $(this).button('loading');
           $.post({
-              url: 'http://localhost:3000/match',
+              url: 'https://iyudo26nodeapp.appspot.com/match',
               cache: false,
               success: function(data){
                 data.forEach(function(elem){
@@ -101,7 +101,7 @@
 
 
                   $.post({
-                      url: 'http://localhost:3000/try',
+                      url: 'https://iyudo26nodeapp.appspot.com/try',
                       cache: false,
                       data: {date: elem.date},
                       success: function(data){
@@ -168,7 +168,7 @@
           event.preventDefault();
           let btn = $('#submit').button('loading');
           $.post({
-            url: 'http://localhost:3000/addTime',
+            url: 'https://iyudo26nodeapp.appspot.com/addTime',
             cache: false,
             data: availability,
             success: function(data){
