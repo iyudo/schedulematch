@@ -82,6 +82,7 @@
     <script src="js/combodate.js"></script>
     <script>
       $(function(){
+        var urlpost = 'https://nameless-depths-68940';
         var form = $('#available');
         var addButton = $('#addAvailability');
         var matchButton = $('#match');
@@ -92,16 +93,13 @@
         matchButton.on('click', function(){
           let btn = $(this).button('loading');
           $.post({
-              url: 'https://iyudo26nodeapp.appspot.com/match',
+              url: `${urlpost}/match`,
               cache: false,
               success: function(data){
                 data.forEach(function(elem){
                   var matchDate = new Date(elem.date);
-
-
-
                   $.post({
-                      url: 'https://iyudo26nodeapp.appspot.com/try',
+                      url: `${urlpost}/try`,
                       cache: false,
                       data: {date: elem.date},
                       success: function(data){
@@ -116,8 +114,8 @@
                           
                           if((minEnd - maxStart)/60000 >= 45){
                             alert(`You can meet ${elem1.name} for ${(minEnd - maxStart)/60000} minutes on ${matchDate.getDate()}-${matchDate.getMonth()+1}-${matchDate.getFullYear()} from ${new Date(maxStart).getHours()}:${new Date(maxStart).getMinutes()}:${new Date(maxStart).getSeconds()} to ${new Date(minEnd).getHours()}:${new Date(minEnd).getMinutes()}:${new Date(minEnd).getSeconds()}`);
-                            btn.button('reset');
                           }
+                          btn.button('reset');
                         });
                       }
                   });
@@ -168,7 +166,7 @@
           event.preventDefault();
           let btn = $('#submit').button('loading');
           $.post({
-            url: 'https://iyudo26nodeapp.appspot.com/addTime',
+            url: `${urlpost}/addTime`,
             cache: false,
             data: availability,
             success: function(data){
