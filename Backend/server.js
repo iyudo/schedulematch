@@ -7,7 +7,7 @@ var express = require('express'),
 	cors = require('cors');
 
 // Connection URL
-var url = 'mongodb://iyudo26:secret@ds147544.mlab.com:47544/schedulematch';
+var url = 'mongodb://localhost:27017/schedulematch';
 
 // Configure express app, use body-parser, use cors, use express-session, use cors for ajax
 app = express();
@@ -19,7 +19,7 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false
 }));
-app.use('/', express.static('../Frontend')); //.. is considered dangerous, thus using path resolve
+app.use(express.static('../Frontend')); //.. is considered dangerous, thus using path resolve
 
 // Handler for GET request
 app.get('/', function(req, res){

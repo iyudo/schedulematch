@@ -113,7 +113,7 @@
                           var minEnd = Math.min(userEnd, otherEnd);
                           
                           if((minEnd - maxStart)/60000 >= 45){
-                            alert(`You can meet ${elem1.name} for ${(minEnd - maxStart)/60000} minutes on ${matchDate.getDate()}-${matchDate.getMonth()+1}-${matchDate.getFullYear()} from ${new Date(maxStart).getHours()}:${new Date(maxStart).getMinutes()}:${new Date(maxStart).getSeconds()} to ${new Date(minEnd).getHours()}:${new Date(minEnd).getMinutes()}:${new Date(minEnd).getSeconds()}`);
+                            alert(`You can meet ${elem1.name} for ${(minEnd - maxStart)/60000} minutes on ${matchDate.getDate()}-${matchDate.getMonth()+1}-${matchDate.getFullYear()} from ${new Date(maxStart).getUTCHours()}:${new Date(maxStart).getUTCMinutes()}:${new Date(maxStart).getUTCSeconds()} to ${new Date(minEnd).getUTCHours()}:${new Date(minEnd).getUTCMinutes()}:${new Date(minEnd).getUTCSeconds()}`);
                           }
                           btn.button('reset');
                         });
