@@ -81,17 +81,15 @@
     <script src="js/moment.js"></script> 
     <script src="js/combodate.js"></script>
     <script>
-    var hellooo = 'hello';
       $(function(){
         let btn = $('#addAvailability').button('loading');
-        var urlpost = 'http://localhost:3000';
+        var urlpost = 'https://nameless-depths-68940.herokuapp.com';
         var form = $('#available');
         var addButton = $('#addAvailability');
         var matchButton = $('#match');
         var availability = {
           datas: []
         };
-        hellooo = availability;
         $.get({
           url: `${urlpost}/getSchedule`,
           cache: false,
