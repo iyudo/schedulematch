@@ -39,6 +39,23 @@ app.get('/schedule', function(req, res){
 	}	
 });
 
+app.get('/getSchedule', function(req, res){
+	if(!req.session.user){
+		res.redirect('login.html?authenticated=no');
+	} else {
+		// res.redirect('schedule.html');
+		MongoClient.connect(url, function(err, db) {
+			// NOTE: research on javascript error handling
+			// without throw statement, the server exits when error exist
+		 	db.collection('userSchedule').find({
+		 		user: req.session.user
+		 	}).toArray(function(err, result){
+		 		db.close();
+		 		res.send(result);
+		 	});
+		});
+	}	
+});
 
 // Handler for POST request
 app.post('/login', function(req, res){
@@ -83,8 +100,8 @@ app.post('/addTime', function(req, res){
 	if(!req.session.user){
 		res.redirect('login.html?authenticated=no');
 	} else {
-		if(!req.body){
-			res.redirect('schedule.html?posted=no');
+		if(!Object.keys(req.body).length){
+			res.send('no data');
 		} else {
 			var postData = Object.keys(req.body).length;
 			postData /= 3;
@@ -142,6 +159,18 @@ app.post('/addTime', function(req, res){
 		
 	}	
 	
+});
+
+app.post('/deleteExisting', function(req, res){
+	if(!req.session.user){
+		res.redirect('login.html?authenticated=no');
+	} else {
+		MongoClient.connect(url, function(err, db) {
+			db.collection('userSchedule').remove({user: req.session.user});
+			db.close();
+			res.send();
+		});
+	}
 });
 
 app.post('/match', function(req, res){

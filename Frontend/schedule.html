@@ -81,7 +81,9 @@
     <script src="js/moment.js"></script> 
     <script src="js/combodate.js"></script>
     <script>
+    var hellooo = 'hello';
       $(function(){
+        let btn = $('#addAvailability').button('loading');
         var urlpost = 'http://localhost:3000';
         var form = $('#available');
         var addButton = $('#addAvailability');
@@ -89,6 +91,24 @@
         var availability = {
           datas: []
         };
+        hellooo = availability;
+        $.get({
+          url: `${urlpost}/getSchedule`,
+          cache: false,
+          data: availability,
+          success: function(data){
+            data.forEach(function(elem){
+              let start = new Date(elem.start);
+              let end = new Date(elem.end);
+              let startH = start.getUTCHours() < 10 ? `0${start.getUTCHours()}` : start.getUTCHours();
+              let endH = end.getUTCHours() < 10 ? `0${end.getUTCHours()}` : end.getUTCHours();
+              let startM = start.getUTCMinutes() < 10 ? `0${start.getUTCMinutes()}` : start.getUTCMinutes();
+              let endM = end.getUTCMinutes() < 10 ? `0${end.getUTCMinutes()}` : end.getUTCMinutes();
+              addLi(`${startH}:${startM}`, `${endH}:${endM}`, elem.date.toString().substring(0,10));
+            });
+            btn.button('reset');
+          }
+        });
 
         matchButton.on('click', function(){
           let btn = $(this).button('loading');
@@ -136,12 +156,41 @@
               }
           });
         });
-        addButton.on('click', function(){
-          var startTime = $('#startTime');
-          var endTime = $('#endTime');
-          var availableDate = $('#availableDate');
 
-          if(startTime.val() && endTime.val() && availableDate.val()){
+        addButton.on('click', function(){
+          var startTime = $('#startTime').val();
+          var endTime = $('#endTime').val();
+          var availableDate = $('#availableDate').val();
+
+          if(startTime && endTime && availableDate){
+            addLi(startTime, endTime, availableDate);
+            form.trigger('reset');
+          } else {
+            alert('please fill the start and end time');
+          }
+        });
+        
+        form.submit(function(event){
+          event.preventDefault();
+          let btn = $('#submit').button('loading');
+          $.post({
+            url: `${urlpost}/deleteExisting`,
+            cache: false,
+            success: function(data){
+              $.post({
+                url: `${urlpost}/addTime`,
+                cache: false,
+                data: availability,
+                success: function(data){
+                  alert(data);
+                  btn.button('reset');
+                }
+              });
+            }
+          });
+        });
+
+        function addLi(startTime, endTime, availableDate){
             var li = document.createElement('li');
             var closeButton = document.createElement('button');
             var closeSpan = document.createElement('span');
@@ -154,37 +203,22 @@
             $(closeSpan).html('&times;');
 
             $(closeButton).append(closeSpan);
+            $(closeButton).click(function(){
+              $(li).remove();
+              availability.datas.splice($('li').index(li)-1,1);
+            });
 
             $(li).addClass('list-group-item');
-            $(li).html('Date: ' + availableDate.val() + '; From: ' + startTime.val() + ' - ' + endTime.val());
+            $(li).html(`Date: ${availableDate}; From: ${startTime} - ${endTime}`);
             $(li).append(closeButton);
 
             availability.datas.push({
-              start: startTime.val(),
-              end: endTime.val(),
-              date: availableDate.val()
+              start: startTime,
+              end: endTime,
+              date: availableDate
             });
             $('ul').append(li);
-
-            form.trigger('reset');
-          } else {
-            alert('please fill the start and end time');
-          }
-        });
-        
-        form.submit(function(event){
-          event.preventDefault();
-          let btn = $('#submit').button('loading');
-          $.post({
-            url: `${urlpost}/addTime`,
-            cache: false,
-            data: availability,
-            success: function(data){
-              alert(data);
-              btn.button('reset');
-            }
-          });
-        });
+        }
       });
     </script>
   </body>

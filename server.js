@@ -39,7 +39,6 @@ app.get('/schedule', function(req, res){
 	}	
 });
 
-
 // Handler for POST request
 app.post('/login', function(req, res){
 	var email = req.body.email;
@@ -151,9 +150,6 @@ app.post('/match', function(req, res){
 		MongoClient.connect(url, function(err, db) {
 			// NOTE: research on javascript error handling
 			// without throw statement, the server exits when error exist
-			// let arr = [];
-			// let userStart = 0;
-			// let userEnd = 0;
 		 	db.collection('userSchedule').find({user: req.session.user}).toArray(function(err, result){
 		 		db.close();
 		 		res.send(result);
@@ -169,7 +165,6 @@ app.post('/try', function(req, res){
 		MongoClient.connect(url, function(err, db) {
 			// NOTE: research on javascript error handling
 			// without throw statement, the server exits when error exist
-			// console.log(req.body.date);
 		 	db.collection('userSchedule').find({
 		 		date: new Date(req.body.date),
 		 		user: {
