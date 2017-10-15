@@ -82,7 +82,7 @@
     <script src="js/combodate.js"></script>
     <script>
       $(function(){
-        var urlpost = 'https://nameless-depths-68940.herokuapp.com';
+        var urlpost = 'http://localhost:3000';
         var form = $('#available');
         var addButton = $('#addAvailability');
         var matchButton = $('#match');
@@ -96,6 +96,11 @@
               url: `${urlpost}/match`,
               cache: false,
               success: function(data){
+                if (!data.length){
+                  alert('no data');
+                  btn.button('reset');
+                  return;
+                }
                 data.forEach(function(elem){
                   var matchDate = new Date(elem.date);
                   $.post({
@@ -103,6 +108,11 @@
                       cache: false,
                       data: {date: elem.date},
                       success: function(data){
+                        if (!data.length){
+                          alert('no match');
+                          btn.button('reset');
+                          return;
+                        }
                         data.forEach(function(elem1){
                           var userStart = elem.start;
                           var userEnd = elem.end;
